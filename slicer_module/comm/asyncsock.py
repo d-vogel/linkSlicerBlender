@@ -224,7 +224,9 @@ class BlenderComm():
             """We have the full ECHO command"""
             data = ''.join(self.received_data)
             data = data[:-len(packet_terminator)]
-            #print(data)
+            # print("[_process_data]: recieved")
+            # print(data)
+            # print(self.cmd_ops_client)
             data = data.split(' net_packet: ')
             #print(data)
             self.received_data = [] #empty buffer

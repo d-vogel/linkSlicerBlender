@@ -12,7 +12,6 @@ from xml.etree import ElementTree as ET
 import re
 import numpy as np
 import SurfaceToolbox
-#import time
 
 #http://codeprogress.com/python/libraries/pyqt/showPyQTExample.php?index=419&key=QFileSystemWatcherDirChange&version=4
 #http://stackoverflow.com/questions/32097163/pyqt-qfilesystemwatcher-doesnt-capture-the-file-added
@@ -320,9 +319,10 @@ class BlenderMonitorWidget:
             modelNode.CreateDefaultDisplayNodes()
             model_points = str(slicer.util.arrayFromModelPoints(modelNode).tolist())
             model_polys = str(self.arrayFromModelPolys(modelNode).tolist())
-            packet = "%s_POLYS_%s_XML_DATA_%s"%(model_points, model_polys, tostring(self.build_xml_scene(modelNode.GetName())).decode())
+            model_color = str(modelNode.GetDisplayNode().GetColor())
+            packet = "%s_POLYS_%s_COLOR_%s_XML_DATA_%s"%(model_points, model_polys, model_color, tostring(self.build_xml_scene(modelNode.GetName())).decode())
             #print(model_polys)
-            #print(packet)
+            print(packet)
             #slicer.util.confirmOkCancelDisplay("Sending object to Blender.", "linkSlicerBlender Info:")
 
             self.sock.send_data("OBJ", packet)

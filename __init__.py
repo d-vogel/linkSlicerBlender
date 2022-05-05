@@ -35,7 +35,7 @@ import inspect
 import time
 import numpy as np
 from numpy import nan
-
+import re
 #Blender
 import bpy
 
@@ -113,11 +113,23 @@ def detect_transforms():
     return changed    
 
 def import_obj_from_slicer(data):
-    #ShowMessageBox("Received object from Slicer.", "linkSlicerBlender Info:")
-    obj, xml = data.split("_XML_DATA_")
-    obj_points, obj_polys = obj.split("_POLYS_")
+    # ShowMessageBox("Received object from Slicer.", "linkSlicerBlender Info: %s"%str(data))
+    # print("--[import_obj_from_slicer]: recieved:")
+    # print(data)
+    rest=data
+    obj_points, rest = rest.split("_POLYS_")
+    obj_polys, rest = rest.split("_COLOR_")
+    obj_color, rest= rest.split("_XML_DATA_")
+    xml=rest
     obj_points = eval(obj_points)
+    print("[import_obj_from_slicer] points")
+    print(obj_points)
     obj_polys = eval(obj_polys)
+    print("[import_obj_from_slicer] polys")
+    print(obj_polys)
+    obj_color = [float(i) for i in eval(obj_color)+(1,)]
+    print("[import_obj_from_slicer] color")
+    print(obj_color)
     blender_faces = []
     offset = 0 #unflatten the list from slicer
     while ( offset < len(obj_polys)):
@@ -142,6 +154,11 @@ def import_obj_from_slicer(data):
     new_mesh.update()
     new_object = bpy.data.objects.new(x_scene[0].get('name'), new_mesh)
     new_object.data = new_mesh
+    new_object.color = obj_color
+
+    new_mat = bpy.data.materials.new(x_scene[0].get('name'))
+    new_mat.diffuse_color = obj_color
+    new_object.active_material = new_mat
     scene = bpy.context.scene
     bpy.context.scene.collection.objects.link(new_object)
 
@@ -245,6 +262,7 @@ def obj_check_handle(data):
     else:
         sg = bpy.data.collections['SlicerLink']
     if status == "STATUS":
+        print("--[obj_check_handle]:")
         print([ob.name for ob in bpy.data.collections['SlicerLink'].objects[:]])
         print(obj_name)
         print([ob.name for ob in bpy.data.objects[:]])
