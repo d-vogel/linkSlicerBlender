@@ -213,13 +213,19 @@ class BlenderComm():
             """We have the full ECHO command"""
             data = ''.join(self.received_data)
             data = data[:-len(packet_terminator)]
-            #print(data)
+            # print("[_process_data]: recieved")
+            # print(data)
+            # print(self.cmd_ops_client)
             data = data.split(' net_packet: ')
             #print(data)
             self.received_data = [] #empty buffer
             #try:
-            if data[0] in self.cmd_ops_client: self.cmd_ops_client[data[0]](data[1]) #call stored function, pass stored arguments from tuple
-            elif data[0] in self.cmd_ops_client and len(data) > 2: self.cmd_ops_client[data[0]][0](data[1], *self.cmd_ops_client[data[0]][1])
+            if data[0] in self.cmd_ops_client:
+                # print(f"calling {data[0]} on long data")
+                self.cmd_ops_client[data[0]](data[1]) #call stored function, pass stored arguments from tuple
+            elif data[0] in self.cmd_ops_client and len(data) > 2:
+                # print(f"calling {data[0]} on short data")
+                self.cmd_ops_client[data[0]][0](data[1], *self.cmd_ops_client[data[0]][1])
             else: pass
             #except: pass
 
